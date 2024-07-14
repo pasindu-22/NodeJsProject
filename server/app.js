@@ -23,7 +23,7 @@ app.post('/insert', (request, response) => {
     .catch(err => console.log(err));
 });
 
-//Read
+//Read from database
 app.get('/getAll', (request, response) => {
     const db = dbService.getDbServiceInstance();
     
