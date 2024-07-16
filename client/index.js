@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function()  {
     .then(data => loadHTMLTable(data['data']));
 
 });
-
+ /* Updated*/
 document.querySelector('table tbody').addEventListener('click', function(event) {
     if (event.target.className === "delete-row-btn") {
         deleteRowById(event.target.dataset.id);
