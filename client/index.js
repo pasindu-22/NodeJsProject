@@ -9,14 +9,58 @@ document.querySelector('table tbody').addEventListener('click', function(event) 
     if (event.target.className === "delete-row-btn") {
         deleteRowById(event.target.dataset.id);
     }
+    if (event.target.className === "edit-row-btn") {
+        handleEditRow(event.target.dataset.id);
+    }
 });
+
+ 
 
 function deleteRowById(id) {
     fetch('http://localhost:5000/delete/' + id, {
-        method: 'DELETE'
+        method: 'DELETE' 
     })
     .then(response => response.json())
-    .then(data => console.log(data));
+    .then(data => {
+        if (data.success) {
+            location.reload();         // Reload the page
+        }
+    });
+}
+
+function handleEditRow(id) {
+    const updateSection = document.querySelector('#update-row'); // Present our hidden edit menu.
+    updateSection.hidden = false;
+    const updateBtn = document.querySelector('#update-row-btn');
+    document.querySelector('#update-row-btn').dataset.id = id;
+}
+
+const updateBtn = document.querySelector('#update-row-btn'); 
+
+updateBtn.onclick = function() {    // Update event listner
+    const updateNameInput = document.querySelector('#update-name-input');
+    const id = updateBtn.dataset.id;
+
+    console.log(updateNameInput);
+    fetch('http://localhost:5000/update', {
+        method: 'PATCH',
+        headers: {
+            'Content-type' : 'application/json'
+        },
+        body: JSON.stringify({
+            id: id,
+            name: updateNameInput.value
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        }  else {
+            console.error('Update failed');
+        }
+    })
+    .catch(error => console.error('Error:', error)); 
 }
 
 const addBtn = document.querySelector('#add-name-btn');
@@ -35,6 +79,17 @@ addBtn.onclick = function () {
     })
     .then(response => response.json())
     .then(data => insertRowIntoTable(data['data']));
+}
+
+
+const searchBtn = document.querySelector('#search-btn');
+
+searchBtn.onclick = function() {
+    const searchValue = document.querySelector('#search-input').value;
+
+    fetch('http://localhost:5000/search/' + searchValue)
+    .then(response => response.json())
+    .then(data => loadHTMLTable(data['data']));
 }
 
 function insertRowIntoTable(data) {

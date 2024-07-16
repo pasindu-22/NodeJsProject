@@ -71,19 +71,66 @@ class DbService {
         try {
             id = parseInt(id, 10);
             const response = await new Promise((resolve, reject) => {
-                const query = "DELETE FROM names WHERE id = ?;";
+                const query = "DELETE FROM appdb WHERE id = ?;";
 
                 connection.query(query, [id], (err, result) => {
-                if (err) reject(new Error(err.message));
-                resolve(result);
-            })
-        }); 
+                    if (err) reject(new Error(err.message));
+                    resolve(result.affectedRows);
+                })
+            }); 
 
-        console.log(response);
-    } catch (error) {
-        console.log(error);
+            return response ===1 ? true:false;
+        } catch (error) {
+            console.log(error);
+            return false;
+        }
     }
-}
-}
+
+    async updateNameById(id, name) {
+        try {
+            id = parseInt(id, 10);
+            
+            // Check if id is a valid number
+            if (isNaN(id)) {
+                throw new Error('Invalid ID');
+            }
+    
+            const response = await new Promise((resolve, reject) => {
+                const query = "UPDATE appdb SET name = ? WHERE id = ?";
+    
+                connection.query(query, [name, id], (err, result) => {
+                    if (err) reject(new Error(err.message));
+                    resolve(result.affectedRows);
+                });
+            });
+    
+            return response === 1 ? true : false;
+        } catch (error) {
+            console.log(error.message);
+            return false;
+        }
+    }
+
+    async searchByName(name) {
+        try {
+            
+            const response = await new Promise((resolve, reject) => {
+                const query = "SELECT * FROM appdb WHERE name = ?;";
+    
+                connection.query(query, [name], (err, result) => {
+                    if (err) reject(new Error(err.message));
+                    resolve(result);
+                });
+            });
+    
+            return response;
+        } catch (error) {
+            console.log(error.message);
+        }
+    }
+    
+     
+} 
+
 
 module.exports = DbService; 
