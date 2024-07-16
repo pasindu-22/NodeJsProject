@@ -35,7 +35,7 @@ app.get('/getAll', (request, response) => {
 });
 //Update
 
-//Delete
+//Delete Details
 app.delete('/delete/:id', (request, response) => {
     const {id} = request.params;
     const db = dbService.getDbServiceInstance();
