@@ -54,7 +54,7 @@ app.delete('/delete/:id', (request, response) => {
     const result = db.deleteRowById(id); 
 
     result
-    .then(data => response.json({success: true}))
+    .then(data => response.json({success: true})) 
     .catch(err => console.log(err));
 })
 
