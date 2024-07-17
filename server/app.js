@@ -12,17 +12,32 @@ app.use(express.urlencoded({ extended: false }));
 
 
 //Create
+
 app.post('/insert', (request, response) => {
-    const { name } = request.body;
+    const { name, city, phone } = request.body;
 
-    const db = dbService.getDbServiceInstance();
+    // Basic validation (should be expanded based on requirements)
+    if (!name || !city || !phone) {
+        return response.status(400).json({ error: 'Missing required fields' });
+    }
+ 
+    try {
+        const db = dbService.getDbServiceInstance();
+        const result = db.insertNewName(name, city, phone);
 
-    const result = db.insertNewName(name);
-    result.
-    then(data => response.json({data: data}))
-    .catch(err => console.log(err));
+        result.then(data => response.status(201).json({ data: data }))
+              .catch(err => {
+                  console.log(`Error occurred while inserting the data for Name: ${name}, City: ${city}, Phone: ${phone}`);
+                  console.log(err);
+                  response.status(500).json({ error: 'An error occurred while inserting the data' });
+              });
+    } catch (error) {
+        console.log(`Failed to get database service instance for Name: ${name}, City: ${city}, Phone: ${phone}`);
+        console.log(error);
+        response.status(500).json({ error: 'Failed to get database service instance' });
+    }
 });
-
+  
 //Read from database
 app.get('/getAll', (request, response) => {
     const db = dbService.getDbServiceInstance();
@@ -31,7 +46,7 @@ app.get('/getAll', (request, response) => {
 
     result.then(data => response.json({data: data}))
     .catch(err => console.log(err)); 
-    
+     
 });
 //Update
 app.patch('/update', (request, response) => {

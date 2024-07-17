@@ -18,7 +18,7 @@ connection.connect((err) => {
     console.log('db ' + connection.state);
 }); 
 
-
+ 
 class DbService {
     static getDbServiceInstance() {
         return instance ? instance : new DbService();
@@ -42,16 +42,17 @@ class DbService {
         }
     }
 
-    async insertNewName(name) {
+    async insertNewName(name,city,phone) {
         try {
             const dateAdded = new Date();
-            // Format the date to match MySQL's datetime format
-            const formattedDate = dateAdded.toISOString().slice(0, 19).replace('T', ' ');
+            // Manually format the date to include local time
+            const offset = dateAdded.getTimezoneOffset() * 60000; // Convert offset to milliseconds
+            const localISOTime = (new Date(dateAdded - offset)).toISOString().slice(0, 19).replace('T', ' ');
 
             const insertId = await new Promise((resolve, reject) => {
-                const query = "INSERT INTO appdb (name, date_added) VALUES (?, ?);";
+                const query = "INSERT INTO appdb (name,city,phone, date_added) VALUES (?, ?, ?, ?);"; 
 
-                connection.query(query, [name, formattedDate], (err, result) => {
+                connection.query(query, [name,city,phone, localISOTime], (err, result) => {
                     if (err) reject(new Error(err.message));
                     resolve(result.insertId);
                 })
@@ -60,10 +61,12 @@ class DbService {
             return {
                 id: insertId,
                 name: name,
+                city: city,
+                phone: phone,
                 dateAdded: dateAdded
             };
         } catch (error) {
-            console.log(error);
+            console.log(error); 
         }
     }
 
@@ -86,6 +89,7 @@ class DbService {
         }
     }
 
+    // Update the name of a row by id
     async updateNameById(id, name) {
         try {
             id = parseInt(id, 10);
@@ -111,13 +115,16 @@ class DbService {
         }
     }
 
+
+    // Search for a row by name
     async searchByName(name) {
         try {
             
             const response = await new Promise((resolve, reject) => {
-                const query = "SELECT * FROM appdb WHERE name = ?;";
+                const query = "SELECT * FROM appdb WHERE name LIKE ?;";
+                const modifiedName = '%' + name + '%'; // Concatenating wildcards with the name parameter
     
-                connection.query(query, [name], (err, result) => {
+                connection.query(query, [modifiedName], (err, result) => {
                     if (err) reject(new Error(err.message));
                     resolve(result);
                 });
