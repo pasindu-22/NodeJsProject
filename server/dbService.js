@@ -42,7 +42,7 @@ class DbService {
         }
     }
 
-    async insertNewName(name) {
+    async insertNewName(name,city,phone) {
         try {
             const dateAdded = new Date();
             // Manually format the date to include local time
@@ -50,9 +50,9 @@ class DbService {
             const localISOTime = (new Date(dateAdded - offset)).toISOString().slice(0, 19).replace('T', ' ');
 
             const insertId = await new Promise((resolve, reject) => {
-                const query = "INSERT INTO appdb (name, date_added) VALUES (?, ?);"; 
+                const query = "INSERT INTO appdb (name,city,phone, date_added) VALUES (?, ?, ?, ?);"; 
 
-                connection.query(query, [name, localISOTime], (err, result) => {
+                connection.query(query, [name,city,phone, localISOTime], (err, result) => {
                     if (err) reject(new Error(err.message));
                     resolve(result.insertId);
                 })
@@ -61,10 +61,12 @@ class DbService {
             return {
                 id: insertId,
                 name: name,
+                city: city,
+                phone: phone,
                 dateAdded: dateAdded
             };
         } catch (error) {
-            console.log(error);
+            console.log(error); 
         }
     }
 
@@ -87,6 +89,7 @@ class DbService {
         }
     }
 
+    // Update the name of a row by id
     async updateNameById(id, name) {
         try {
             id = parseInt(id, 10);
@@ -112,6 +115,8 @@ class DbService {
         }
     }
 
+
+    // Search for a row by name
     async searchByName(name) {
         try {
             
