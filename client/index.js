@@ -67,6 +67,9 @@ function handleEditRow(id) {
     document.querySelector('#update-row-btn').dataset.id = id;
 }
 
+
+
+// Update Row by ID
 const updateBtn = document.querySelector('#update-row-btn'); 
 
 updateBtn.onclick = function() {    // Update event listner

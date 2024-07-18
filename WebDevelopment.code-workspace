@@ -7,5 +7,7 @@
 			"path": "../BankingSystem"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "DBProject"
+	}
 }
