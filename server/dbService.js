@@ -135,6 +135,24 @@ class DbService {
             console.log(error.message);
         }
     }
+
+    async loginUser(username, password) {
+        try {
+            const response = await new Promise((resolve, reject) => {
+                const query = "SELECT * FROM users WHERE username = ? AND password = ?;";
+
+                connection.query(query, [username, password], (err, result) => {
+                    if (err) reject(new Error(err.message));
+                    resolve(result.length > 0 ? true : false);
+                });
+            });
+
+            return response;
+        } catch (error) {
+            console.log(error.message);
+            return false;
+        }
+    }
     
      
 } 
